@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+    <p>Email: {{ user.email }}</p>
+    <p>Phone: {{ user.phone_1 }} {% if user.phone_2 %} / {{ user.phone_2 }} {% endif %}</p>
+    <p>Role: {{ user.role.title }}</p>
+    <p>Address: {{ user.address }}</p>
+    <p>Joined: {{ user.created_at|date:"M d, Y" }}</p>
+
+    <h2>Your Properties</h2>
+    {% for property in properties %}
+        <div>
+            <h2>{{ property.type.title }} - {{ property.city.title }}</h2>
+            <p>Area: {{ property.area }} sq ft</p>
+            <p>Bedrooms: {{ property.num_bedrooms }}</p>
+            <p>Bathrooms: {{ property.num_bathrooms }}</p>
+            <p>Rent Allowance: ${{ property.rent_allowance }}</p>
+            <p>Status: {% if property.is_vacant %}Vacant{% else %}Occupied{% endif %}</p>
+            <p>Active: {{ property.is_active }}</p>
+            <p>Notes: {{ property.notes }}</p>
+        </div>
+    {% empty %}
+        <p>No properties found.</p>
+    {% endfor %}
+</body>
+</html>

@@ -1,9 +1,8 @@
-from .models import *
 from django.shortcuts import render, redirect
+from .models import *
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import User, Role
 import re
 
 
@@ -147,3 +146,15 @@ def profile_view(request):
     }
     return render(request, 'rent_app/profile.html', context)
 
+def user_dashboard(request):
+    if 'user_id' not in request.session:
+        return redirect('/login')
+    
+    user = User.objects.get(id=request.session['user_id'])
+    properties = Property.objects.filter(owner=user)
+    
+    context = {
+        "user": user,
+        "properties": properties
+    }
+    return render(request, "user_dashboard.html", context)
