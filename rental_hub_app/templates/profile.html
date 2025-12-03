@@ -1,0 +1,63 @@
+{% extends 'rent_app/base.html' %}
+
+{% block title %}Profile - For Rent{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <p>You have successfully logged in.</p>
+    </div>
+    
+    <div class="profile-card">
+        <div class="profile-header">
+            <h2>Profile Information</h2>
+            <p class="role-badge role-{{ user.role.title|lower }}">{{ user.role.title }}</p>
+        </div>
+        
+        <div class="profile-details">
+            <div class="detail-item">
+                <span class="detail-label">First Name:</span>
+                <span class="detail-value">{{ user.first_name }}</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="detail-label">Last Name:</span>
+                <span class="detail-value">{{ user.last_name }}</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ user.email }}</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="detail-label">Phone 1:</span>
+                <span class="detail-value">{{ user.phone_1 }}</span>
+            </div>
+            
+            {% if user.phone_2 %}
+            <div class="detail-item">
+                <span class="detail-label">Phone 2:</span>
+                <span class="detail-value">{{ user.phone_2 }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="detail-item">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value">{{ user.address }}</span>
+            </div>
+            
+            <div class="detail-item">
+                <span class="detail-label">Role:</span>
+                <span class="detail-value">{{ user.role.title }}</span>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="{% url 'about_us' %}" class="btn btn-secondary">Go to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

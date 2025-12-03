@@ -1,0 +1,166 @@
+{% extends 'rent_app/base.html' %}
+
+{% block title %}Register - For Rent{% endblock %}
+
+{% block content %}
+<div class="auth-container" id="register-page">
+    <div class="auth-card">
+        <div class="auth-form-section">
+            <div class="auth-form-content" id="register-form-content">
+                <h2 class="auth-title" id="register-title">Create Your Account</h2>
+                <p class="auth-subtitle" id="register-subtitle">Join For Rent today and start your property journey</p>
+                
+                <form id="registerForm" method="POST" action="{% url 'register' %}" class="auth-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row" id="name-row">
+                        <div class="form-group" id="first_name-group">
+                            <label for="first_name" id="first_name-label">First Name</label>
+                            <input type="text" id="first_name" name="first_name" 
+                                   value="{{ form_data.first_name|default:'' }}" 
+                                   placeholder="Enter your First Name" required>
+                            {% if errors.first_name %}
+                            <span class="error-message">{{ errors.first_name }}</span>
+                            {% else %}
+                            <span class="error-message" id="first_name-error"></span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group" id="last_name-group">
+                            <label for="last_name" id="last_name-label">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" 
+                                   value="{{ form_data.last_name|default:'' }}" 
+                                   placeholder="Enter your Last Name" required>
+                            {% if errors.last_name %}
+                            <span class="error-message">{{ errors.last_name }}</span>
+                            {% else %}
+                            <span class="error-message" id="last_name-error"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="email-group">
+                        <label for="email" id="email-label">Email</label>
+                        <input type="email" id="email" name="email" 
+                               value="{{ form_data.email|default:'' }}" 
+                               placeholder="Enter your email" required>
+                        {% if errors.email %}
+                        <span class="error-message">{{ errors.email }}</span>
+                        {% else %}
+                        <span class="error-message" id="email-error"></span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row" id="password-row">
+                        <div class="form-group" id="password-group">
+                            <label for="password" id="password-label">Password</label>
+                            <input type="password" id="password" name="password" 
+                                   placeholder="Enter your password" required>
+                            {% if errors.password %}
+                            <span class="error-message">{{ errors.password }}</span>
+                            {% else %}
+                            <span class="error-message" id="password-error"></span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group" id="confirm_password-group">
+                            <label for="confirm_password" id="confirm_password-label">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" 
+                                   placeholder="Confirm your password" required>
+                            {% if errors.confirm_password %}
+                            <span class="error-message">{{ errors.confirm_password }}</span>
+                            {% else %}
+                            <span class="error-message" id="confirm_password-error"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row" id="phone-row">
+                        <div class="form-group" id="phone_1-group">
+                            <label for="phone_1" id="phone_1-label">Phone 1</label>
+                            <input type="text" id="phone_1" name="phone_1" 
+                                   value="{{ form_data.phone_1|default:'' }}" 
+                                   placeholder="Enter your phone number" required>
+                            {% if errors.phone_1 %}
+                            <span class="error-message">{{ errors.phone_1 }}</span>
+                            {% else %}
+                            <span class="error-message" id="phone_1-error"></span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group" id="phone_2-group">
+                            <label for="phone_2" id="phone_2-label">Phone 2 (Optional)</label>
+                            <input type="text" id="phone_2" name="phone_2" 
+                                   value="{{ form_data.phone_2|default:'' }}" 
+                                   placeholder="Enter your second phone (optional)">
+                            {% if errors.phone_2 %}
+                            <span class="error-message">{{ errors.phone_2 }}</span>
+                            {% else %}
+                            <span class="error-message" id="phone_2-error"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="address-group">
+                        <label for="address" id="address-label">Address</label>
+                        <input type="text" id="address" name="address" 
+                               value="{{ form_data.address|default:'' }}" 
+                               placeholder="Enter your address" required>
+                        {% if errors.address %}
+                        <span class="error-message">{{ errors.address }}</span>
+                        {% else %}
+                        <span class="error-message" id="address-error"></span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group" id="role-group">
+                        <label for="role" id="role-label">Role</label>
+                        <select id="role" name="role" required>
+                            <option value="">Select a role</option>
+                            {% for role in roles %}
+                            <option value="{{ role.id }}" {% if form_data.role == role.id|stringformat:"s" %}selected{% endif %}>{{ role.title }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if errors.role %}
+                        <span class="error-message">{{ errors.role }}</span>
+                        {% else %}
+                        <span class="error-message" id="role-error"></span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if errors.general %}
+                    <div class="error-message server-error">
+                        {{ errors.general }}
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" id="submit-btn" class="btn-auth btn-primary">Submit</button>
+                </form>
+                
+                <div class="auth-footer-links">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auth-branding-section">
+            <div class="auth-branding-content">
+                <div class="brand-logo-animated">
+                    <div class="logo-buildings">
+                        <div class="building building-1"></div>
+                        <div class="building building-2"></div>
+                        <div class="building building-3"></div>
+                    </div>
+                </div>
+                <h1 class="brand-title">FOR RENT</h1>
+                <p class="brand-tagline">Elevate your property search with our powerful platform!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/validation.js' %}?v=2.0"></script>
+{% endblock %}
