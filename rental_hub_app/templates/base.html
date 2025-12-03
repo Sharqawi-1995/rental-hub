@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}For Rent{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
+    {% block extra_css %}{% endblock %}
+</head>
+<body {% if request.resolver_match.url_name == 'register' %}id="register-page"{% endif %}>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="{% url 'about_us' %}">For Rent</a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{% url 'about_us' %}" class="{% if request.resolver_match.url_name == 'about_us' %}active{% endif %}">About Us</a></li>
+                    <li><a href="{% url 'login' %}" class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="{% if request.resolver_match.url_name == 'register' %}active{% endif %}">Register</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer {% if request.resolver_match.url_name == 'login' or request.resolver_match.url_name == 'register' %}auth-footer{% endif %}">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>For Rent</h3>
+                    <p>Connecting property owners with renters</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'about_us' %}">About Us</a></li>
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'register' %}">Register</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="{% url 'about_us' %}">About Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 or Rent. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
