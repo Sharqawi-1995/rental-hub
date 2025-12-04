@@ -8,7 +8,7 @@ import re
 
 def about_us(request):
     """About Us page"""
-    return render(request, 'rent_app/about_us.html')
+    return render(request, 'about_us.html')
 
 
 def login_view(request):
@@ -29,7 +29,7 @@ def login_view(request):
             else:
                 error_message = "Invalid email or password. Please try again."
     
-    return render(request, 'rent_app/login.html', {'error_message': error_message})
+    return render(request, 'login.html', {'error_message': error_message})
 
 
 def register_view(request):
@@ -129,9 +129,9 @@ def register_view(request):
                 'role': role_id,
             }
         }
-        return render(request, 'rent_app/register.html', context)
+        return render(request, 'register.html', context)
     
-    return render(request, 'rent_app/register.html', {'errors': {}, 'form_data': {}, 'roles': roles})
+    return render(request, 'register.html', {'errors': {}, 'form_data': {}, 'roles': roles})
 
 
 def profile_view(request):
@@ -144,7 +144,7 @@ def profile_view(request):
         'user': user,
         'role_title': user.get_role_title(),
     }
-    return render(request, 'rent_app/profile.html', context)
+    return redirect(request, 'profile.html', context)
 
 def user_dashboard(request):
     if 'user_id' not in request.session:
