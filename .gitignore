@@ -7,5 +7,3 @@ db.sqlite3
 .vscode
 .env
 venv/
-rental_hub_pro/settings.py
-.gitignore
