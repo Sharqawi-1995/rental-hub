@@ -88,9 +88,9 @@ DATABASES = {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'rent_db',
             'USER': 'root',
-            'PASSWORD': 'root',
-            'HOST': 'localhost',  # Or the IP address/hostname of your MySQL server
-            'PORT': '3306',       # Or the port your MySQL server is running on
+            'PASSWORD': 'Shaq1415.',    # Replace with your actual MySQL password
+            'HOST': 'localhost',        # Or the IP address/hostname of your MySQL server
+            'PORT': '3306',             # Or the port your MySQL server is running on
             'OPTIONS': {
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             }
