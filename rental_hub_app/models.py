@@ -14,7 +14,6 @@ class User_Manager(models.Manager):
         phone_2=postData.get('phone_2')
         role=postData.get('role')
         address=postData.get('address')
-        
         EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
         
         if len(first_name) <=2 :
@@ -46,6 +45,7 @@ class User_Manager(models.Manager):
             if not password==password_confirm:
                 errors["password"]="Password Mismatch"
         return errors
+    
     # for login page error validation
     def login_validator(self,postData):
         errors={}
@@ -70,7 +70,7 @@ class User_Manager(models.Manager):
 class User(models.Model):
     first_name=models.CharField(max_length=15)
     last_name=models.CharField(max_length=15)
-    email=models.CharField(max_length=20)
+    email=models.CharField(max_length=20, unique=True)
     password=models.CharField(max_length=255)
     phone_1=models.CharField(max_length=255)
     phone_2=models.CharField(max_length=15)
@@ -107,6 +107,7 @@ def validate_login(form):
             return True
         else:
             return False
+        
 # for login page error validation
     def login_validator(self,postData):
         errors={}
