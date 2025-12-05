@@ -14,7 +14,6 @@ class User_Manager(models.Manager):
         phone_2=postData.get('phone_2')
         role=postData.get('role')
         address=postData.get('address')
-        
         EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
         
         if len(first_name) <=2 :
@@ -46,6 +45,7 @@ class User_Manager(models.Manager):
             if not password==password_confirm:
                 errors["password"]="Password Mismatch"
         return errors
+    
     # for login page error validation
     def login_validator(self,postData):
         errors={}
@@ -70,7 +70,7 @@ class User_Manager(models.Manager):
 class User(models.Model):
     first_name=models.CharField(max_length=15)
     last_name=models.CharField(max_length=15)
-    email=models.CharField(max_length=20)
+    email=models.CharField(max_length=20, unique=True)
     password=models.CharField(max_length=255)
     phone_1=models.CharField(max_length=255)
     phone_2=models.CharField(max_length=15)
@@ -107,6 +107,7 @@ def validate_login(form):
             return True
         else:
             return False
+        
 # for login page error validation
     def login_validator(self,postData):
         errors={}
@@ -218,7 +219,38 @@ class Rent_type(models.Model):
     
 class City(models.Model):
     title=models.CharField(max_length=10)
+
+class RoleManager(models.Manager):
+    def get_by_natural_key(self, title):
+        return self.get(title=title)
+
     
 class Role(models.Model):
     title=models.CharField(max_length=10)
+    objects = RoleManager()
+
+    class Meta:
+        db_table = 'role'
+
+    def __str__(self):
+        return self.title
+
     
+class EmailBackend:
+    """
+    Custom authentication backend that uses email instead of username
+    """
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        try:
+            user = User.objects.get(email=username)
+            if user.check_password(password):
+                return user
+        except User.DoesNotExist:
+            return None
+        return None
+    
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
