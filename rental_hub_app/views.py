@@ -1,160 +1,330 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render,redirect
 from .models import *
-from django.contrib.auth import authenticate, login
+from . import models
+import datetime
 from django.contrib import messages
-from django.db import IntegrityError
-import re
+from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
-def about_us(request):
-    """About Us page"""
-    return render(request, 'about_us.html')
-
-
-def login_view(request):
-    """Login page view"""
-    error_message = None
-    
-    if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '')
-        
-        if not email or not password:
-            error_message = "Please fill in all fields."
+# Create your views here.
+def login_meth(request):
+    if request.method=="POST":
+        errors=User.objects.login_validator(request.POST)
+        if len(errors) > 0:
+            for key,value in errors.items():
+                messages.error(request,value)
+            # save previous data input in session to display them in directed page
+            request.session['log_email']=request.POST['log_email']
+            request.session['log_password']=request.POST['log_password']
+            return redirect('/')
         else:
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('profile')
+            if models.validate_login(request.POST):
+                users_list=User.objects.filter(email=request.POST['log_email'])
+                user=users_list[0]
+                if user:
+                    logged_user=users_list[0]
+                    request.session['logged']=True
+                    request.session['logged_in_user_id']=logged_user.id
+                    request.session['logged_in_user_name']=logged_user.first_name +' '+logged_user.last_name
+                    # delete data from session
+                    if 'log_email' in request.session:
+                        del request.session['log_email']
+                    if 'log_password' in request.session:
+                        del request.session['log_password']
+                    request.session.modified = True
+                if user.role == Role.objects.get(title='host'):
+                    return redirect('/received')
+                elif user.role == Role.objects.get(title='guest'):
+                    return redirect('/sent')
+                elif user.role == Role.objects.get(title='admin'):
+                    return redirect('/admin_board')
+                else:
+                    return render(request,'insufficient_priv.html')
+                    
             else:
-                error_message = "Invalid email or password. Please try again."
-    
-    return render(request, 'login.html', {'error_message': error_message})
+                return redirect('/')
+    else:
+        return render(request,'login.html')
 
-
-def register_view(request):
-    """Register page view"""
-    errors = {}
-    roles = Role.objects.all()
-    
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '')
-        confirm_password = request.POST.get('confirm_password', '')
-        phone_1 = request.POST.get('phone_1', '').strip()
-        phone_2 = request.POST.get('phone_2', '').strip()
-        address = request.POST.get('address', '').strip()
-        role_id = request.POST.get('role', '')
-        
-        # Server-side validation
-        if not first_name:
-            errors['first_name'] = "First name is required."
-        if not last_name:
-            errors['last_name'] = "Last name is required."
-        if not email:
-            errors['email'] = "Email is required."
-        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            errors['email'] = "Please enter a valid email address."
+def register_meth(request):
+    if request.method=="POST":
+        errors=User.objects.create_new_user_validator(request.POST)
+        if len(errors) > 0:
+            for key,value in errors.items():
+                messages.error(request,value)
+            # save previous data input in session to display them again
+            request.session['first_name']=request.POST['first_name']
+            request.session['last_name']=request.POST['last_name']
+            request.session['email']=request.POST['email']
+            request.session['password']=request.POST['password']
+            request.session['password_confirm']=request.POST['password_confirm']
+            request.session['phone_1']=request.POST['phone_1']
+            request.session['phone_2']=request.POST['phone_2']
+            request.session['role']=request.POST['role']
+            request.session['address']=request.POST['address']
+            return redirect('/register')
         else:
-            # Check if email already exists
-            if User.objects.filter(email=email).exists():
-                errors['email'] = "This email is already registered."
-        
-        if not password:
-            errors['password'] = "Password is required."
-        elif len(password) < 8:
-            errors['password'] = "Password must be at least 8 characters long."
-        
-        if not confirm_password:
-            errors['confirm_password'] = "Please confirm your password."
-        elif password != confirm_password:
-            errors['confirm_password'] = "Passwords do not match."
-        
-        if not phone_1:
-            errors['phone_1'] = "Phone 1 is required."
-        else:
-            # Remove all non-digit characters for validation
-            phone_digits = re.sub(r'\D', '', phone_1)
-            if len(phone_digits) < 10:
-                errors['phone_1'] = "Phone number must be at least 10 digits."
-        
-        # Validate phone_2 if provided
-        if phone_2:
-            phone2_digits = re.sub(r'\D', '', phone_2)
-            if len(phone2_digits) < 10:
-                errors['phone_2'] = "Phone number must be at least 10 digits."
-        
-        if not address:
-            errors['address'] = "Address is required."
-        
-        if not role_id:
-            errors['role'] = "Please select a role."
-        
-        # If no errors, create user
-        if not errors:
-            try:
-                role = Role.objects.get(id=role_id)
-                user = User.objects.create_user(
-                    email=email,
-                    password=password,
-                    first_name=first_name,
-                    last_name=last_name,
-                    phone_1=phone_1,
-                    phone_2=phone_2 if phone_2 else None,
-                    address=address,
-                    role=role
-                )
-                messages.success(request, 'Registration successful! Please login.')
-                return redirect('login')
-            except Role.DoesNotExist:
-                errors['role'] = "Invalid role selected."
-            except IntegrityError:
-                errors['email'] = "This email is already registered."
-            except Exception as e:
-                errors['general'] = f"An error occurred: {str(e)}"
-        
-        # Return form data and errors for re-display
+            add_user(request.POST)
+            # delete data from session
+            if 'first_name' in request.session:
+                del request.session['first_name']
+            if 'last_name' in request.session:
+                del request.session['last_name']
+            if 'email' in request.session:
+                del request.session['email']
+            if 'password' in request.session:
+                del request.session['password']
+            if 'password_confirm' in request.session:
+                del request.session['password_confirm']
+            if 'phone_1' in request.session:
+                del request.session['phone_1']
+            if 'phone_2' in request.session:
+                del request.session['phone_2']
+            if 'role' in request.session:
+                del request.session['role']
+            if 'address' in request.session:
+                del request.session['address']
+            request.session.modified = True
+            return redirect('/')
+    else:
+        roles = Role.objects.exclude(title='admin')
         context = {
-            'errors': errors,
-            'roles': roles,
-            'form_data': {
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email,
-                'phone_1': phone_1,
-                'phone_2': phone_2,
-                'address': address,
-                'role': role_id,
-            }
-        }
-        return render(request, 'register.html', context)
+        'roles': roles}
+        return render(request,'register.html',context)
     
-    return render(request, 'register.html', {'errors': {}, 'form_data': {}, 'roles': roles})
+def insufficient_priv_meth(request):
+    return render(request,'insufficient_priv.html')
 
+def logout_meth(request):
+    # delete data from session
+    if 'logged' in request.session:
+        del request.session['logged']
+        print("logged")
+    if 'logged_in_user_name' in request.session:
+        del request.session['logged_in_user_name']
+        print("logged_in_user_name")
+    if 'logged_in_user_id' in request.session:
+        del request.session['logged_in_user_id']
+        print("logged_in_user_id")
+    request.session.modified = True
+    return redirect('/')
 
-def profile_view(request):
-    """Profile page view - shows user info after login"""
-    if not request.user.is_authenticated:
-        return redirect('login')
+def add_property_meth(request):
+    if request.method=="POST":
+        errors=Property.objects.create_new_property_validator(request.POST)
+        if len(errors) > 0:
+            for key,value in errors.items():
+                messages.error(request,value)
+            # save previous data input in session to display them again
+            # 20 item
+            request.session['type']=request.POST['type']
+            request.session['rent_type']=request.POST['rent_type']
+            request.session['area']=request.POST['area']
+            request.session['elevator']=request.POST['elevator']
+            request.session['rent_allowance']=request.POST['rent_allowance']
+            request.session['num_bedrooms']=request.POST['num_bedrooms']
+            request.session['num_living_rooms']=request.POST['num_living_rooms']
+            request.session['num_kitchens']=request.POST['num_kitchens']
+            request.session['num_balconies']=request.POST['num_balconies']
+            request.session['num_bathrooms']=request.POST['num_bathrooms']
+            request.session['num_air_conditions']=request.POST['num_air_conditions']
+            request.session['num_parkings']=request.POST['num_parkings']
+            request.session['internet_service']=request.POST['internet_service']
+            request.session['city']=request.POST['city']
+            request.session['address']=request.POST['address']
+            request.session['is_vacant']=request.POST['is_vacant']
+            request.session['rent_start_date']=request.POST['rent_start_date']
+            request.session['rent_end_date']=request.POST['rent_end_date']
+            request.session['notes_host']=request.POST['notes_host']
+            request.session['notes_host_private']=request.POST['notes_host_private']
     
-    user = request.user
-    context = {
-        'user': user,
-        'role_title': user.get_role_title(),
-    }
-    return redirect(request, 'profile.html', context)
+            return redirect('/add-property')
+        else:
+            add_property(request.POST)
+            # delete data from session
+            if 'type' in request.session:
+                del request.session['type']
+            if 'rent_type' in request.session:
+                del request.session['rent_type']
+            if 'area' in request.session:
+                del request.session['area']
+            if 'elevator' in request.session:
+                del request.session['elevator']
+            if 'rent_allowance' in request.session:
+                del request.session['rent_allowance']
+            if 'num_bedrooms' in request.session:
+                del request.session['num_bedrooms']
+            if 'num_living_rooms' in request.session:
+                del request.session['num_living_rooms']
+            if 'num_kitchens' in request.session:
+                del request.session['num_kitchens']
+            if 'num_balconies' in request.session:
+                del request.session['num_balconies']
+            if 'num_bathrooms' in request.session:
+                del request.session['num_bathrooms']
+            if 'num_air_conditions' in request.session:
+                del request.session['num_air_conditions']
+            if 'num_parkings' in request.session:
+                del request.session['num_parkings']
+            if 'internet_service' in request.session:
+                del request.session['internet_service']
+            if 'city' in request.session:
+                del request.session['city']
+            if 'address' in request.session:
+                del request.session['address']
+            if 'is_vacant' in request.session:
+                del request.session['is_vacant']
+            if 'rent_start_date' in request.session:
+                del request.session['rent_start_date']
+            if 'rent_end_date' in request.session:
+                del request.session['rent_end_date']
+            if 'notes_host' in request.session:
+                del request.session['notes_host']
+            if 'notes_host_private' in request.session:
+                del request.session['notes_host_private']
+            request.session.modified = True
+            return redirect('/my_properties')
+    else:
+        property_types = Type.objects.all()
+        rent_types = Rent_type.objects.all()
+        cities = City.objects.all()
+        context = {
+        'property_types': property_types,
+        'rent_types':rent_types,
+        'cities':cities}
+        
+        return render(request,'property_add.html',context)
+def edit_property_meth(request,id):
+    if request.method=="POST":
+        errors=Property.objects.create_new_property_validator(request.POST)
+        if len(errors) > 0:
+            for key,value in errors.items():
+                messages.error(request,value)
+            # 20 item
+            request.session['type']=request.POST['type']
+            request.session['rent_type']=request.POST['rent_type']
+            request.session['area']=request.POST['area']
+            request.session['elevator']=request.POST['elevator']
+            request.session['rent_allowance']=request.POST['rent_allowance']
+            request.session['num_bedrooms']=request.POST['num_bedrooms']
+            request.session['num_living_rooms']=request.POST['num_living_rooms']
+            request.session['num_kitchens']=request.POST['num_kitchens']
+            request.session['num_balconies']=request.POST['num_balconies']
+            request.session['num_bathrooms']=request.POST['num_bathrooms']
+            request.session['num_air_conditions']=request.POST['num_air_conditions']
+            request.session['num_parkings']=request.POST['num_parkings']
+            request.session['internet_service']=request.POST['internet_service']
+            request.session['city']=request.POST['city']
+            request.session['address']=request.POST['address']
+            request.session['is_vacant']=request.POST['is_vacant']
+            request.session['rent_start_date']=request.POST['rent_start_date']
+            request.session['rent_end_date']=request.POST['rent_end_date']
+            request.session['notes_host']=request.POST['notes_host']
+            request.session['notes_host_private']=request.POST['notes_host_private']
+    
+            return redirect(f'/edit-property/{request.POST['id']}')
+        else:
+            update_property(request.POST,request.session['logged_in_user_id'])
+            # delete data from session
+            if 'type' in request.session:
+                del request.session['type']
+            if 'rent_type' in request.session:
+                del request.session['rent_type']
+            if 'area' in request.session:
+                del request.session['area']
+            if 'elevator' in request.session:
+                del request.session['elevator']
+            if 'rent_allowance' in request.session:
+                del request.session['rent_allowance']
+            if 'num_bedrooms' in request.session:
+                del request.session['num_bedrooms']
+            if 'num_living_rooms' in request.session:
+                del request.session['num_living_rooms']
+            if 'num_kitchens' in request.session:
+                del request.session['num_kitchens']
+            if 'num_balconies' in request.session:
+                del request.session['num_balconies']
+            if 'num_bathrooms' in request.session:
+                del request.session['num_bathrooms']
+            if 'num_air_conditions' in request.session:
+                del request.session['num_air_conditions']
+            if 'num_parkings' in request.session:
+                del request.session['num_parkings']
+            if 'internet_service' in request.session:
+                del request.session['internet_service']
+            if 'city' in request.session:
+                del request.session['city']
+            if 'address' in request.session:
+                del request.session['address']
+            if 'is_vacant' in request.session:
+                del request.session['is_vacant']
+            if 'rent_start_date' in request.session:
+                del request.session['rent_start_date']
+            if 'rent_end_date' in request.session:
+                del request.session['rent_end_date']
+            if 'notes_host' in request.session:
+                del request.session['notes_host']
+            if 'notes_host_private' in request.session:
+                del request.session['notes_host_private']
+            request.session.modified = True
+            return redirect(f'/view-property/{id}')
+    else:
+        property_types = Type.objects.all()
+        rent_types = Rent_type.objects.all()
+        cities = City.objects.all()
+        
+        property_list=Property.objects.filter(id=id)
+        if property_list[0]:
+            property=property_list[0]
+        else:
+            property="Record does not exists"
+        context = {
+                    'property_types': property_types,
+                    'rent_types':rent_types,
+                    'cities':cities,
+                    'property':property }
+        return render(request,'property_edit.html',context)
+    
+def view_property_meth(request,id):
+    property_list=Property.objects.filter(id=id)
+    if property_list[0]:
+        property=property_list[0]
+    else:
+        property="Record does not exists"
+    context = {'property':property }
+    
+    return render(request,'property_view.html',context)
 
-def user_dashboard(request):
-    if 'user_id' not in request.session:
-        return redirect('/login')
-    
-    user = User.objects.get(id=request.session['user_id'])
-    properties = Property.objects.filter(owner=user)
-    
-    context = {
-        "user": user,
-        "properties": properties
-    }
-    return render(request, "user_dashboard.html", context)
+def delete_property_meth(request,id):
+    if request.session.get('logged'):
+        # only creator can delete this object
+        property_list=Property.objects.filter(id=id)
+        property_db=property_list[0]
+        
+        if request.session.get('logged_in_user_id') == property_db.owner.id:
+            delete_property(id)
+            return redirect('/my_properties')
+        else:
+            return redirect(f"/insufficient_privileges")
+    else:
+        return redirect('/')
+def my_properties_meth(request):
+    if request.session.get('logged'):
+        # for owner , we display all properties of logged in owner
+        logged_in_user_list=User.objects.filter(id=request.session['logged_in_user_id'])
+        logged_in_user=logged_in_user_list[0]
+        property_list=Property.objects.filter(owner=logged_in_user)
+        p = Paginator(property_list, 12) 
+        page_number = request.GET.get('page') 
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        except EmptyPage:
+            # if page is empty then return last page
+            page_obj = p.page(p.num_pages)
+        context = {'page_obj': page_obj}
+        return render(request,'property_my_properties.html',context)
+    else:
+        return redirect('/')

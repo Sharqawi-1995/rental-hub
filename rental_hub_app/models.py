@@ -1,7 +1,7 @@
 from django.db import models
 import bcrypt
 import re
-
+import datetime 
 class User_Manager(models.Manager):
     def create_new_user_validator(self,postData):
         errors={}
@@ -14,6 +14,7 @@ class User_Manager(models.Manager):
         phone_2=postData.get('phone_2')
         role=postData.get('role')
         address=postData.get('address')
+        
         EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
         
         if len(first_name) <=2 :
@@ -45,7 +46,6 @@ class User_Manager(models.Manager):
             if not password==password_confirm:
                 errors["password"]="Password Mismatch"
         return errors
-    
     # for login page error validation
     def login_validator(self,postData):
         errors={}
@@ -70,7 +70,7 @@ class User_Manager(models.Manager):
 class User(models.Model):
     first_name=models.CharField(max_length=15)
     last_name=models.CharField(max_length=15)
-    email=models.CharField(max_length=20, unique=True)
+    email=models.CharField(max_length=20)
     password=models.CharField(max_length=255)
     phone_1=models.CharField(max_length=255)
     phone_2=models.CharField(max_length=15)
@@ -107,7 +107,6 @@ def validate_login(form):
             return True
         else:
             return False
-        
 # for login page error validation
     def login_validator(self,postData):
         errors={}
@@ -134,6 +133,7 @@ class Property_Manager(models.Manager):
         type=postData.get('type')
         rent_type=postData.get('rent_type')
         area=postData.get('area')
+        elevator=postData.get('elevator')
         rent_allowance=postData.get('rent_allowance')
         num_bedrooms=postData.get('num_bedrooms')
         num_living_rooms=postData.get('num_living_rooms')
@@ -141,12 +141,12 @@ class Property_Manager(models.Manager):
         num_balconies=postData.get('num_balconies')
         num_bathrooms=postData.get('num_bathrooms')
         num_air_conditions=postData.get('num_air_conditions')
+        num_parkings=postData.get('num_parkings')
         internet_service=postData.get('internet_service')
         city=postData.get('city')
         address=postData.get('address')
         is_active=postData.get('is_active')
         is_vacant=postData.get('is_vacant')
-        notes=postData.get('notes')
         rent_start_date=postData.get('rent_start_date')
         rent_end_date=postData.get('rent_end_date')
         
@@ -156,30 +156,38 @@ class Property_Manager(models.Manager):
             errors["rent_type"]="Rent Type should be selected"
         if len(area) == 0 :
             errors["area"]="Area should be filled"
+        if len(elevator) == 0 :
+            errors["elevator"]="Elevator should be selected"
         if len(rent_allowance) == 0 :
             errors["rent_allowance"]="Rent allowence should be filled"
         if len(num_bedrooms) == 0 :
-            errors["num_bedrooms"]="Number of bedrooms should be filled"
+            errors["num_bedrooms"]="Number of bedrooms should be defined"
         if len(num_living_rooms) == 0 :
-            errors["num_living_rooms"]="Number of living rooms should be filled"
+            errors["num_living_rooms"]="Number of living rooms should be defined"
         if len(num_kitchens) == 0 :
-            errors["num_kitchens"]="Number of Kitchens should be filled"
+            errors["num_kitchens"]="Number of Kitchens should be defined"
         if len(num_balconies) == 0 :
-            errors["num_balconies"]="Number of Balconies should be filled"
+            errors["num_balconies"]="Number of Balconies should be defined"
         if len(num_bathrooms) == 0 :
-            errors["num_bathrooms"]="Number of bathrooms should be filled"
+            errors["num_bathrooms"]="Number of bathrooms should be defined"
         if len(num_air_conditions) == 0 :
-            errors["num_air_conditions"]="Number of air conditions should be filled"
+            errors["num_air_conditions"]="Number of air conditions should be defined"
+        if len(num_parkings) == 0 :
+            errors["num_parkings"]="Number of parkings should be defined"
         if len(internet_service) == 0 :
             errors["internet_service"]="Internet serivce should be selected"
         if len(city) == 0 :
             errors["city"]="City should be selected"
         if len(address) == 0 :
             errors["address"]="Address should be filled"
-        if len(is_active) == 0 :
-            errors["is_active"]="Is active should be selected"
         if len(is_vacant) == 0 :
-            errors["is_vacant"]="Is vacant should be selected"
+            errors["is_vacant"]="Is-Vacant status should be selected"
+        else:
+            if is_vacant==False:
+                if len(rent_start_date) == 0:
+                    errors["rent_start_date"]="Rent start date should be selected"
+                if len(rent_end_date) == 0:
+                    errors["rent_end_date"]="Rent end date should be selected"
         return errors
             
 class Property(models.Model):
@@ -187,6 +195,7 @@ class Property(models.Model):
     type=models.ForeignKey('Type',related_name="properties",on_delete=models.CASCADE,null=True)
     rent_type=models.ForeignKey('Rent_type',related_name="properties",on_delete=models.CASCADE,null=True)
     area=models.PositiveIntegerField(default=0)
+    elevator=models.BooleanField(default=False)
     rent_allowance=models.PositiveIntegerField(default=0)
     num_bedrooms=models.PositiveIntegerField(default=0)
     num_living_rooms=models.PositiveIntegerField(default=0)
@@ -194,6 +203,7 @@ class Property(models.Model):
     num_balconies=models.PositiveIntegerField(default=0)
     num_bathrooms=models.PositiveIntegerField(default=0)
     num_air_conditions=models.PositiveIntegerField(default=0)
+    num_parkings=models.PositiveIntegerField(default=0)
     internet_service=models.BooleanField(default=False)
     city=models.ForeignKey('City',related_name="properties",on_delete=models.CASCADE,null=True)
     address=models.TextField(blank=True, null=True)
@@ -201,16 +211,154 @@ class Property(models.Model):
     is_vacant=models.BooleanField(default=False)
     rent_start_date=models.DateField()
     rent_end_date=models.DateField()
-    notes=models.TextField(blank=True, null=True)
+    notes_host=models.TextField(blank=True, null=True)
+    notes_host_private=models.TextField(blank=True, null=True)
+    notes_admin_to_host=models.TextField(blank=True, null=True)
+    notes_admin_private=models.TextField(blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     objects=Property_Manager()
+
+# only for hosts
+def add_property(form):
+    Property.objects.create(
+    owner=User.objects.get(id=form['owner']),
+    type=Type.objects.get(id=form['type']),
+    rent_type=Rent_type.objects.get(id=form['rent_type']),
+    area=form['area'],
+    elevator=form['elevator'],
+    rent_allowance=form['rent_allowance'],
+    num_bedrooms=form['num_bedrooms'],
+    num_living_rooms=form['num_living_rooms'],
+    num_kitchens=form['num_kitchens'],
+    num_balconies=form['num_balconies'],
+    num_bathrooms=form['num_bathrooms'],
+    num_air_conditions=form['num_air_conditions'],
+    num_parkings=form['num_parkings'],
+    internet_service=form['internet_service'],
+    city=City.objects.get(id=form['city']),
+    address=form['address'],
+    # is_active=form['is_active'],
+    is_vacant=form['is_vacant'],
+    rent_start_date=form['rent_start_date'],
+    rent_end_date=form['rent_end_date'],
+    notes_host=form['notes_host'],
+    notes_host_private=form['notes_host_private']           
+    )
+
+# only for hosts
+def update_property(form,logged_in_user_id):
+    print(f"MMMMMMMMMMMMM")
+    property=Property.objects.get(id=form['id'])
+    property.type=Type.objects.get(id=form['type'])
+    rent_type=Rent_type.objects.get(id=form['rent_type'])
+    property.area=form['area']
+    property.elevator=form['elevator']
+    property.rent_allowance=form['rent_allowance']
+    property.num_bedrooms=form['num_bedrooms']
+    property.num_living_rooms=form['num_living_rooms']
+    property.num_kitchens=form['num_kitchens']
+    property.num_balconies=form['num_balconies']
+    property.num_bathrooms=form['num_bathrooms']
+    property.num_air_conditions=form['num_air_conditions']
+    property.num_parkings=form['num_parkings']
+    property.internet_service=form['internet_service']
+    city=City.objects.get(id=form['city'])
+    property.address=form['address']
+    property.is_vacant=form['is_vacant']
+    if form['rent_start_date'] == '':
+        property.rent_start_date = ''
+    else:
+        try:
+            property.rent_start_date = datetime.datetime.strptime(form['rent_start_date'], '%Y-%m-%d').date()
+        except ValueError:
+            property.rent_start_date = '' 
+    if form['rent_end_date'] == '':
+        property.rent_end_date = ''
+    else:
+        try:
+            property.rent_end_date = datetime.datetime.strptime(form['rent_end_date'], '%Y-%m-%d').date()
+        except ValueError:
+            property.rent_end_date = '' 
+    property.notes_host=form['notes_host']
+    property.notes_host_private=form['notes_host_private']       
+    # this  condition is for admins only
+    # only admins can change status of vehicles
+    user_list=User.objects.filter(id=logged_in_user_id)
+    user=user_list[0]
+    if user:
+        if user.role.title=='admin':
+            if form['is_active']:
+                property.is_active=form['is_active']
+    property.save()
     
 def delete_property(id):
-    property_list=Property.objects.filter(id=id)
-    property=property_list[0]
+    property=Property.objects.get(id=id)
     property.delete()
 
+def all_properties_list():
+        return Property.objects.all().order_by("created_at")
+    
+class Request_Manager(models.Manager):
+    def make_request_validator(self,postData):
+        errors={}
+        
+        start_date=postData.get('start_date')
+        end_date=postData.get('end_date')
+            
+        if len(start_date)==0:
+            errors["start_date"]="Rent start date should be selected"
+        else:
+            current_datetime =datetime.datetime.now()
+            start_date_object = datetime.datetime.strptime(postData['start_date'], "%Y-%m-%d")
+            if  start_date_object < current_datetime:
+                errors["start_date"]="Rent start date should be after current date"
+        if len(end_date)==0:
+            errors["end_date"]="Rent end date should be selected"
+        else:
+            current_datetime =datetime.datetime.now()
+            end_date_object = datetime.datetime.strptime(postData['end_date'], "%Y-%m-%d")
+            if  end_date_object < current_datetime:
+                errors["end_date"]="Rent end date should be after current date"
+        if start_date and end_date:
+            start_date_object = datetime.datetime.strptime(postData['start_date'], "%Y-%m-%d")
+            end_date_object = datetime.datetime.strptime(postData['end_date'], "%Y-%m-%d")
+            if start_date > end_date:
+                errors["end_date"]="Rent end date should be after start date"
+        return errors
+    
+class Request(models.Model):
+    guest=models.ForeignKey(User,related_name='requests',on_delete=models.CASCADE)
+    property=models.ForeignKey(Property,related_name='requests',on_delete=models.CASCADE)
+    start_date=models.DateField()
+    end_date=models.DateField()
+    notes_guest=models.TextField(blank=True, null=True)
+    notes_host=models.TextField(blank=True, null=True)
+    notes_host_private=models.TextField(blank=True, null=True)
+    notes_admin=models.TextField(blank=True, null=True)
+    status=models.CharField(max_length=15)
+    approved_by=models.ForeignKey(User,related_name='approved_requests',on_delete=models.CASCADE,null=True)
+    rejected_by=models.ForeignKey(User,related_name='rejected_requests',on_delete=models.CASCADE,null=True)
+    cancelled_by=models.ForeignKey(User,related_name='canceled_requests',on_delete=models.CASCADE,null=True)
+    finished_by=models.ForeignKey(User,related_name='finished_requests',on_delete=models.CASCADE,null=True)
+    approved_at=models.DateTimeField(null=True, blank=True)
+    rejected_at=models.DateTimeField(null=True, blank=True)
+    cancelled_at=models.DateTimeField(null=True, blank=True)
+    finished_at=models.DateTimeField(null=True, blank=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    objects=Request_Manager()
+
+class Image(models.Model):
+    uploader=models.ForeignKey(User,related_name='images',on_delete=models.CASCADE)
+    property=models.ForeignKey(Property,related_name='images',on_delete=models.CASCADE)
+    path=models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=255)
+    order=models.PositiveIntegerField(default=0)
+    description=models.TextField(blank=True, null=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    
 class Type(models.Model):
     title=models.CharField(max_length=15)
     
@@ -219,38 +367,7 @@ class Rent_type(models.Model):
     
 class City(models.Model):
     title=models.CharField(max_length=10)
-
-class RoleManager(models.Manager):
-    def get_by_natural_key(self, title):
-        return self.get(title=title)
-
     
 class Role(models.Model):
     title=models.CharField(max_length=10)
-    objects = RoleManager()
-
-    class Meta:
-        db_table = 'role'
-
-    def __str__(self):
-        return self.title
-
     
-class EmailBackend:
-    """
-    Custom authentication backend that uses email instead of username
-    """
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            user = User.objects.get(email=username)
-            if user.check_password(password):
-                return user
-        except User.DoesNotExist:
-            return None
-        return None
-    
-    def get_user(self, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None

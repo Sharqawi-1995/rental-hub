@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Property Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/sent.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar_footer.css' %}">
+</head>
+
+<body>
+    <!-- <nav>
+        <div class="nav-left">
+            <img src="{% static 'icons/transit.png' %}" alt="transit logo icon" height="50px" width="50px">
+            <h1>Search a transit</h1>
+        </div>
+        <div class="nav-center"></div>
+        <div class="nav-right">
+            <a href="/received" id="home" class="button_hover" style="color: #0084f6;">Home</a>
+            <a href="/received-archive" class="button_hover" >Archive</a>
+            <a href="/my_vehicles" class="button_hover">My vehicles</a>
+            <a href="/logout" class="button_hover">Logout</a>
+        </div>
+    </nav> -->
+    <main>
+        <div>
+            <h2>Edit Property</h2>
+            <form action="/edit-property/{{property.id}}" method="post">
+                {% csrf_token %}
+                <div>
+                    <input type="hidden" name="owner" id="owner" value="{{request.session.logged_in_user_id}}">
+                    <input type="hidden" name="id" id="id" value="{{property.id}}">
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Type</label>
+                    {% if 'type' in request.session %}
+                    <select name="type" id="type">
+                        {% for type in property_types %}
+                        <option value="{{ type.id }}" {% if type.title == request.session.type %}selected{% endif %}>
+                            {{ type.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <select name="type" id="type">
+                        {% for type in property_types %} 
+                        <option value="{{ type.id }}" {% if type.id == property.type.id %}selected{% endif %}>{{ type.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Rent type</label>
+                    {% if 'rent_type' in request.session %}
+                    <select name="rent_type" id="rent_type">
+                        {% for type in rent_types %}
+                        <option value="{{ type.id }}" {% if type.title == request.session.rent_type %}selected{% endif %}>
+                            {{ type.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <select name="rent_type" id="rent_type">
+                        {% for type in rent_types %}
+                        <option value="{{ type.id }}"  {% if type.id == property.rent_type.id %}selected{% endif %}>{{ type.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Area</label>
+                    {% if 'area' in request.session %}
+                    <input type="number" name="area" id="area" value="{{request.session.area}}">
+                    {% else %}
+                    <input type="number" name="area" id="area" value="{{property.area}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Elevator</label>
+                    {% if 'elevator' in request.session %}
+                    <select name="elevator" id="elevator">
+                        <option value="True" {% if request.session.elevator == 'True' %}selected{% endif %}>Yes
+                        </option>
+                        <option value="False" {% if request.session.elevator == 'False' %}selected{% endif %}>No
+                        </option>
+                    </select>
+                    {% else %}
+                    <select name="elevator" id="elevator">
+                        <option value="True"  {% if property.elevator == True %}selected{% endif %} >Yes</option>
+                        <option value="False"  {% if property.elevator == False %}selected{% endif %} >No</option>
+                    </select>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label class="col-sm-2 col-form-label">Rent Allowance</label>
+                    {% if 'rent_allowance' in request.session %}
+                    <input type="number" name="rent_allowance" id="rent_allowance" value="{{request.session.rent_allowance}}">
+                    {% else %}
+                    <input type="number" name="rent_allowance" id="rent_allowance" value="{{property.rent_allowance}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of bedrooms</label>
+                    {% if 'num_bedrooms' in request.session %}
+                    <input type="number" name="num_bedrooms" id="num_bedrooms" value="{{request.session.num_bedrooms}}">
+                    {% else %}
+                    <input type="number" name="num_bedrooms" id="num_bedrooms" value="{{property.num_bedrooms}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of living rooms</label>
+                    {% if 'num_bedrooms' in request.session %}
+                    <input type="number" name="num_living_rooms" id="num_living_rooms" value="{{request.session.num_living_rooms}}">
+                    {% else %}
+                    <input type="number" name="num_living_rooms" id="num_living_rooms" value="{{property.num_living_rooms}}">
+                    {% endif %}
+                </div>
+
+                
+                <div>
+                    <label class="col-sm-2 col-form-label">Num_ of kitchens</label>
+                    {% if 'num_kitchens' in request.session %}
+                    <input type="number" name="num_kitchens" id="num_kitchens" value="{{request.session.num_kitchens}}">
+                    {% else %}
+                    <input type="number" name="num_kitchens" id="num_kitchens" value="{{property.num_kitchens}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of balconies</label>
+                    {% if 'num_balconies' in request.session %}
+                    <input type="number" name="num_balconies" id="num_balconies" value="{{request.session.num_balconies}}">
+                    {% else %}
+                    <input type="number" name="num_balconies" id="num_balconies"  value="{{property.num_balconies}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of bathrooms</label>
+                    {% if 'num_bathrooms' in request.session %}
+                    <input type="number" name="num_bathrooms" id="num_bathrooms" value="{{request.session.num_bathrooms}}">
+                    {% else %}
+                    <input type="number" name="num_bathrooms" id="num_bathrooms" value="{{property.num_bathrooms}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of air conditions</label>
+                    {% if 'num_air_conditions' in request.session %}
+                    <input type="number" name="num_air_conditions" id="num_air_conditions" value="{{request.session.num_air_conditions}}">
+                    {% else %}
+                    <input type="number" name="num_air_conditions" id="num_air_conditions" value="{{property.num_air_conditions}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Num of parkings</label>
+                    {% if 'num_parkings' in request.session %}
+                    <input type="number" name="num_parkings" id="num_parkings" value="{{request.session.num_parkings}}">
+                    {% else %}
+                    <input type="number" name="num_parkings" id="num_parkings"  value="{{property.num_parkings}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Internet service</label>
+                    {% if 'internet_service' in request.session %}
+                    <select name="internet_service" id="internet_service">
+                        <option value="True" {% if request.session.internet_service == 'True' %}selected{% endif %}>Yes
+                        </option>
+                        <option value="False" {% if request.session.internet_service == 'False' %}selected{% endif %}>No
+                        </option>
+                    </select>
+                    {% else %}
+                    <select name="internet_service" id="internet_service">
+                        <option value="True" {% if property.internet_service == True %}selected{% endif %} >Yes</option>
+                        <option value="False" {% if property.internet_service == False %}selected{% endif %} >No</option>
+                    </select>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label class="col-sm-2 col-form-label">City</label>
+                    {% if 'city' in request.session %}
+                    <select name="city" id="city">
+                        {% for city in cities %}
+                        <option value="{{ city.id }}" {% if city.title == request.session.city %}selected{% endif %}>
+                            {{ city.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <select name="city" id="city">
+                        {% for city in cities %}
+                        <option value="{{ city.id }}"  {% if city.id == property.city.id %}selected{% endif %}>{{ city.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Address</label>
+                    {% if 'address' in request.session %}
+                    <input type="text" name="address" id="address" value="{{request.session.address}}">
+                    {% else %}
+                    <input type="text" name="address" id="address" value="{{property.address}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Is vacant</label>
+                    {% if 'is_vacant' in request.session %}
+                    <select name="is_vacant" id="is_vacant">
+                        <option value="True" {% if request.session.is_vacant == 'True' %}selected{% endif %}>Yes
+                        </option>
+                        <option value="False" {% if request.session.is_vacant == 'False' %}selected{% endif %}>No
+                        </option>
+                    </select>
+                    {% else %}
+                    <select name="is_vacant" id="is_vacant">
+                        <option value="True" {% if property.is_vacant == True %}selected{% endif %} >Yes</option>
+                        <option value="False" {% if property.is_vacant == False %}selected{% endif %} >No</option>
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Rent start date</label>
+                    {% if 'rent_start_date' in request.session %}
+                    <input type="date" id="rent_start_date" name="rent_start_date" value="{{request.session.rent_start_date|date:'Y-m-d'}}">
+                    {% else %}
+                    <input type="date" name="rent_start_date" id="rent_start_date" value="{{property.rent_start_date|date:'Y-m-d'}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Rent end date</label>
+                    {% if 'rent_end_date' in request.session %}
+                    <input type="date" id="rent_end_date" name="rent_end_date" value="{{request.session.rent_end_date|date:'Y-m-d'}}">
+                    {% else %}
+                    <input type="date" name="rent_end_date" id="rent_end_date" value="{{property.rent_end_date|date:'Y-m-d'}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Notes ( public )</label>
+                    {% if 'notes_host' in request.session %}
+                    <input type="text" name="notes_host" id="notes_host" value="{{request.session.notes_host}}">
+                    {% else %}
+                    <input type="text" name="notes_host" id="notes_host" value="{{property.notes_host}}">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="col-sm-2 col-form-label">Notes ( private )</label>
+                    {% if 'notes_host_private' in request.session %}
+                    <input type="text" name="notes_host_private" id="notes_host_private" value="{{request.session.notes_host_private}}">
+                    {% else %}
+                    <input type="text" name="notes_host_private" id="notes_host_private" value="{{property.notes_host_private}}">
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label class="col-sm-2 col-form-label"></label>
+                    <button type="submit">Edit</button>
+                </div>
+
+            </form>
+
+            <div class="errors_div">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tag %} class="{{ message.tag}}" {% endif %}>
+                        {{message}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+    <!-- <footer>
+        <div class="footer-left">
+            <p>©2025 by Mohammad Mafarjeh</br>
+                proudly created with Technology</p>
+        </div>
+        <div class="footer-right">
+            <div>
+                <p>Call</p>
+                <p>0598-972-598</p>
+            </div>
+            <div>
+                <p>E-mail</p>
+                <p>mohmdmafarjeh@gmail.com</p>
+            </div>
+            <div>
+                <p>Follow</p>
+                <div>
+                    <p><a href="#"><img src="{% static 'icons/face.png' %}" alt="facebook icon" height="15px"
+                                width="15px"></a>
+                    </p>
+                    <p><a href="#"><img src="{% static 'icons/twitter.svg' %}" alt="twitter icon" height="15px"
+                                width="15px"></a>
+                    </p>
+                    <p><a href="#"><img src="{% static 'icons/linkedIn.png' %}" alt="linkeIn icon" height="15px"
+                                width="15px"></a>
+                    </p>
+                    <p><a href="#"><img src="{% static 'icons/insta.png' %}" alt="instagram icon" height="15px"
+                                width="15px"></a>
+                    </p>
+                </div>
+            </div>
+    </footer> -->
+
+    <!-- bootstrap js 3 files -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <!-- jquery  -->
+    <!-- <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script> -->
+    <!-- my js file -->
+    <!-- <script src="{% static 'js/script.js' %}"></script> -->
+
+
+</body>
+
+</html>
