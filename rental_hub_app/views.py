@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from .models import *
 from . import models
 import datetime
@@ -9,25 +9,29 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 
 # Create your views here.
+
+
 def login_meth(request):
-    if request.method=="POST":
-        errors=User.objects.login_validator(request.POST)
+    if request.method == "POST":
+        errors = User.objects.login_validator(request.POST)
         if len(errors) > 0:
-            for key,value in errors.items():
-                messages.error(request,value)
+            for key, value in errors.items():
+                messages.error(request, value)
             # save previous data input in session to display them in directed page
-            request.session['log_email']=request.POST['log_email']
-            request.session['log_password']=request.POST['log_password']
+            request.session['log_email'] = request.POST['log_email']
+            request.session['log_password'] = request.POST['log_password']
             return redirect('/')
         else:
             if models.validate_login(request.POST):
-                users_list=User.objects.filter(email=request.POST['log_email'])
-                user=users_list[0]
+                users_list = User.objects.filter(
+                    email=request.POST['log_email'])
+                user = users_list[0]
                 if user:
-                    logged_user=users_list[0]
-                    request.session['logged']=True
-                    request.session['logged_in_user_id']=logged_user.id
-                    request.session['logged_in_user_name']=logged_user.first_name +' '+logged_user.last_name
+                    logged_user = users_list[0]
+                    request.session['logged'] = True
+                    request.session['logged_in_user_id'] = logged_user.id
+                    request.session['logged_in_user_name'] = logged_user.first_name + \
+                        ' '+logged_user.last_name
                     # delete data from session
                     if 'log_email' in request.session:
                         del request.session['log_email']
@@ -41,29 +45,29 @@ def login_meth(request):
                 elif user.role == Role.objects.get(title='admin'):
                     return redirect('/admin_board')
                 else:
-                    return render(request,'insufficient_priv.html')
-                    
+                    return render(request, 'insufficient_priv.html')
             else:
                 return redirect('/')
     else:
-        return render(request,'login.html')
+        return render(request, 'login.html')
+
 
 def register_meth(request):
-    if request.method=="POST":
-        errors=User.objects.create_new_user_validator(request.POST)
+    if request.method == "POST":
+        errors = User.objects.create_new_user_validator(request.POST)
         if len(errors) > 0:
-            for key,value in errors.items():
-                messages.error(request,value)
+            for key, value in errors.items():
+                messages.error(request, value)
             # save previous data input in session to display them again
-            request.session['first_name']=request.POST['first_name']
-            request.session['last_name']=request.POST['last_name']
-            request.session['email']=request.POST['email']
-            request.session['password']=request.POST['password']
-            request.session['password_confirm']=request.POST['password_confirm']
-            request.session['phone_1']=request.POST['phone_1']
-            request.session['phone_2']=request.POST['phone_2']
-            request.session['role']=request.POST['role']
-            request.session['address']=request.POST['address']
+            request.session['first_name'] = request.POST['first_name']
+            request.session['last_name'] = request.POST['last_name']
+            request.session['email'] = request.POST['email']
+            request.session['password'] = request.POST['password']
+            request.session['password_confirm'] = request.POST['password_confirm']
+            request.session['phone_1'] = request.POST['phone_1']
+            request.session['phone_2'] = request.POST['phone_2']
+            request.session['role'] = request.POST['role']
+            request.session['address'] = request.POST['address']
             return redirect('/register')
         else:
             add_user(request.POST)
@@ -91,11 +95,13 @@ def register_meth(request):
     else:
         roles = Role.objects.exclude(title='admin')
         context = {
-        'roles': roles}
-        return render(request,'register.html',context)
-    
+            'roles': roles}
+        return render(request, 'register.html', context)
+
+
 def insufficient_priv_meth(request):
-    return render(request,'insufficient_priv.html')
+    return render(request, 'insufficient_priv.html')
+
 
 def logout_meth(request):
     # delete data from session
@@ -111,36 +117,37 @@ def logout_meth(request):
     request.session.modified = True
     return redirect('/')
 
+
 def add_property_meth(request):
     # if request.method=="POST":
     if request.method == "POST":
-        image = request.FILES.get("image") 
-        errors=Property.objects.create_new_property_validator(request.POST)
+        image = request.FILES.get("image")
+        errors = Property.objects.create_new_property_validator(request.POST)
         if len(errors) > 0:
-            for key,value in errors.items():
-                messages.error(request,value)
+            for key, value in errors.items():
+                messages.error(request, value)
             # save previous data input in session to display them again
             # 20 item
-            request.session['type']=request.POST['type']
-            request.session['rent_type']=request.POST['rent_type']
-            request.session['area']=request.POST['area']
-            request.session['elevator']=request.POST['elevator']
-            request.session['rent_allowance']=request.POST['rent_allowance']
-            request.session['num_bedrooms']=request.POST['num_bedrooms']
-            request.session['num_living_rooms']=request.POST['num_living_rooms']
-            request.session['num_kitchens']=request.POST['num_kitchens']
-            request.session['num_balconies']=request.POST['num_balconies']
-            request.session['num_bathrooms']=request.POST['num_bathrooms']
-            request.session['num_air_conditions']=request.POST['num_air_conditions']
-            request.session['num_parkings']=request.POST['num_parkings']
-            request.session['internet_service']=request.POST['internet_service']
-            request.session['city']=request.POST['city']
-            request.session['address']=request.POST['address']
-            request.session['is_vacant']=request.POST['is_vacant']
-            request.session['rent_start_date']=request.POST['rent_start_date']
-            request.session['rent_end_date']=request.POST['rent_end_date']
-            request.session['notes_host']=request.POST['notes_host']
-            request.session['notes_host_private']=request.POST['notes_host_private']
+            request.session['type'] = request.POST['type']
+            request.session['rent_type'] = request.POST['rent_type']
+            request.session['area'] = request.POST['area']
+            request.session['elevator'] = request.POST['elevator']
+            request.session['rent_allowance'] = request.POST['rent_allowance']
+            request.session['num_bedrooms'] = request.POST['num_bedrooms']
+            request.session['num_living_rooms'] = request.POST['num_living_rooms']
+            request.session['num_kitchens'] = request.POST['num_kitchens']
+            request.session['num_balconies'] = request.POST['num_balconies']
+            request.session['num_bathrooms'] = request.POST['num_bathrooms']
+            request.session['num_air_conditions'] = request.POST['num_air_conditions']
+            request.session['num_parkings'] = request.POST['num_parkings']
+            request.session['internet_service'] = request.POST['internet_service']
+            request.session['city'] = request.POST['city']
+            request.session['address'] = request.POST['address']
+            request.session['is_vacant'] = request.POST['is_vacant']
+            request.session['rent_start_date'] = request.POST['rent_start_date']
+            request.session['rent_end_date'] = request.POST['rent_end_date']
+            request.session['notes_host'] = request.POST['notes_host']
+            request.session['notes_host_private'] = request.POST['notes_host_private']
             # request.session['image_1']=request.FILES["image_1"]
             # request.session['image_2']=request.FILES["image_2"]
             # request.session['image_1_title']=request.POST["image_1_title"]
@@ -148,7 +155,7 @@ def add_property_meth(request):
             # request.session['image']=request.FILES["image"]
             return redirect('/add-property')
         else:
-            add_property(request.POST,request.FILES)
+            add_property(request.POST, request.FILES)
             # delete data from session
             if 'type' in request.session:
                 del request.session['type']
@@ -207,42 +214,45 @@ def add_property_meth(request):
         rent_types = Rent_type.objects.all()
         cities = City.objects.all()
         context = {
-        'property_types': property_types,
-        'rent_types':rent_types,
-        'cities':cities}
-        
-        return render(request,'property_add.html',context)
-def edit_property_meth(request,id):
-    if request.method=="POST":
-        errors=Property.objects.create_new_property_validator(request.POST)
+            'property_types': property_types,
+            'rent_types': rent_types,
+            'cities': cities}
+
+        return render(request, 'property_add.html', context)
+
+
+def edit_property_meth(request, id):
+    if request.method == "POST":
+        errors = Property.objects.create_new_property_validator(request.POST)
         if len(errors) > 0:
-            for key,value in errors.items():
-                messages.error(request,value)
+            for key, value in errors.items():
+                messages.error(request, value)
             # 20 item
-            request.session['type']=request.POST['type']
-            request.session['rent_type']=request.POST['rent_type']
-            request.session['area']=request.POST['area']
-            request.session['elevator']=request.POST['elevator']
-            request.session['rent_allowance']=request.POST['rent_allowance']
-            request.session['num_bedrooms']=request.POST['num_bedrooms']
-            request.session['num_living_rooms']=request.POST['num_living_rooms']
-            request.session['num_kitchens']=request.POST['num_kitchens']
-            request.session['num_balconies']=request.POST['num_balconies']
-            request.session['num_bathrooms']=request.POST['num_bathrooms']
-            request.session['num_air_conditions']=request.POST['num_air_conditions']
-            request.session['num_parkings']=request.POST['num_parkings']
-            request.session['internet_service']=request.POST['internet_service']
-            request.session['city']=request.POST['city']
-            request.session['address']=request.POST['address']
-            request.session['is_vacant']=request.POST['is_vacant']
-            request.session['rent_start_date']=request.POST['rent_start_date']
-            request.session['rent_end_date']=request.POST['rent_end_date']
-            request.session['notes_host']=request.POST['notes_host']
-            request.session['notes_host_private']=request.POST['notes_host_private']
-    
+            request.session['type'] = request.POST['type']
+            request.session['rent_type'] = request.POST['rent_type']
+            request.session['area'] = request.POST['area']
+            request.session['elevator'] = request.POST['elevator']
+            request.session['rent_allowance'] = request.POST['rent_allowance']
+            request.session['num_bedrooms'] = request.POST['num_bedrooms']
+            request.session['num_living_rooms'] = request.POST['num_living_rooms']
+            request.session['num_kitchens'] = request.POST['num_kitchens']
+            request.session['num_balconies'] = request.POST['num_balconies']
+            request.session['num_bathrooms'] = request.POST['num_bathrooms']
+            request.session['num_air_conditions'] = request.POST['num_air_conditions']
+            request.session['num_parkings'] = request.POST['num_parkings']
+            request.session['internet_service'] = request.POST['internet_service']
+            request.session['city'] = request.POST['city']
+            request.session['address'] = request.POST['address']
+            request.session['is_vacant'] = request.POST['is_vacant']
+            request.session['rent_start_date'] = request.POST['rent_start_date']
+            request.session['rent_end_date'] = request.POST['rent_end_date']
+            request.session['notes_host'] = request.POST['notes_host']
+            request.session['notes_host_private'] = request.POST['notes_host_private']
+
             return redirect(f'/edit-property/{request.POST['id']}')
         else:
-            update_property(request.POST,request.FILES,request.session['logged_in_user_id'])
+            update_property(request.POST, request.FILES,
+                            request.session['logged_in_user_id'])
             # delete data from session
             if 'type' in request.session:
                 del request.session['type']
@@ -290,38 +300,40 @@ def edit_property_meth(request,id):
         property_types = Type.objects.all()
         rent_types = Rent_type.objects.all()
         cities = City.objects.all()
-        
-        property_list=Property.objects.filter(id=id)
-        if property_list[0]:
-            property=property_list[0]
-            images_list=Image.objects.filter(property=property)
-        else:
-            property="Record does not exists"
-        context = {
-                    'property_types': property_types,
-                    'rent_types':rent_types,
-                    'cities':cities,
-                    'property':property,
-                    'images_list':images_list}
-        return render(request,'property_edit.html',context)
-    
-def view_property_meth(request,id):
-    property_list=Property.objects.filter(id=id)
-    if property_list[0]:
-        property=property_list[0]
-        images_list=Image.objects.filter(property=property)
-    else:
-        property="Record does not exists"
-    context = {'property':property,
-                'images_list':images_list}
-    
-    return render(request,'property_view.html',context)
 
-def delete_property_meth(request,id):
+        property_list = Property.objects.filter(id=id)
+        if property_list[0]:
+            property = property_list[0]
+            images_list = Image.objects.filter(property=property)
+        else:
+            property = "Record does not exists"
+        context = {
+            'property_types': property_types,
+            'rent_types': rent_types,
+            'cities': cities,
+            'property': property,
+            'images_list': images_list}
+        return render(request, 'property_edit.html', context)
+
+
+def view_property_meth(request, id):
+    property_list = Property.objects.filter(id=id)
+    if property_list[0]:
+        property = property_list[0]
+        images_list = Image.objects.filter(property=property)
+    else:
+        property = "Record does not exists"
+    context = {'property': property,
+               'images_list': images_list}
+
+    return render(request, 'property_view.html', context)
+
+
+def delete_property_meth(request, id):
     if request.session.get('logged'):
         # only creator can delete this object
-        property_list=Property.objects.filter(id=id)
-        property_db=property_list[0]
+        property_list = Property.objects.filter(id=id)
+        property_db = property_list[0]
         if request.session.get('logged_in_user_id') == property_db.owner.id:
             delete_property(id)
             return redirect('/my_properties')
@@ -329,16 +341,20 @@ def delete_property_meth(request,id):
             return redirect(f"/insufficient_privileges")
     else:
         return redirect('/')
+
+
 def my_properties_meth(request):
     if request.session.get('logged'):
         # for owner , we display all properties of logged in owner
-        logged_in_user_list=User.objects.filter(id=request.session['logged_in_user_id'])
-        logged_in_user=logged_in_user_list[0]
-        property_list=Property.objects.filter(owner=logged_in_user)
-        p = Paginator(property_list, 12) 
-        page_number = request.GET.get('page') 
+        logged_in_user_list = User.objects.filter(
+            id=request.session['logged_in_user_id'])
+        logged_in_user = logged_in_user_list[0]
+        property_list = Property.objects.filter(owner=logged_in_user)
+        p = Paginator(property_list, 12)
+        page_number = request.GET.get('page')
         try:
-            page_obj = p.get_page(page_number)  # returns the desired page object
+            # returns the desired page object
+            page_obj = p.get_page(page_number)
         except PageNotAnInteger:
             # if page_number is not an integer then assign the first page
             page_obj = p.page(1)
@@ -346,6 +362,35 @@ def my_properties_meth(request):
             # if page is empty then return last page
             page_obj = p.page(p.num_pages)
         context = {'page_obj': page_obj}
-        return render(request,'property_my_properties.html',context)
+        return render(request, 'property_my_properties.html', context)
     else:
         return redirect('/')
+
+
+def dashboard(request):
+    user_id = request.session.get('logged_in_user_id')
+    if not user_id:
+        return redirect('/')
+
+    logged_in_user = User.objects.filter(id=user_id).first()
+    if not logged_in_user:
+        return redirect('/')
+
+    context = {'user': logged_in_user}
+    return render(request, 'dashboard.html', context)
+
+
+def update_user(request):
+    if request.method == "POST":
+        user_id = request.session.get('logged_in_user_id')
+        user = User.objects.get(id=user_id)
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
+        user.email = request.POST['email']
+        user.phone_1 = request.POST['phone_1']
+        user.phone_2 = request.POST.get('phone_2', '')
+        user.address = request.POST['address']
+        user.password = request.POST['password']
+        user.save()
+
+        return redirect('/dashboard/')

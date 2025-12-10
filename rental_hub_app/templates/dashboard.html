@@ -1,20 +1,66 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>user</title>
+    <title>dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
 </head>
-<body>
-    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
-    <p>Email: {{ user.email }}</p>
-    <p>Phone: {{ user.phone_1 }} {% if user.phone_2 %} / {{ user.phone_2 }} {% endif %}</p>
-    <p>Role: {{ user.role.title }}</p>
-    <p>Address: {{ user.address }}</p>
-    <p>Joined: {{ user.created_at|date:"M d, Y" }}</p>
+<header>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+</header>
 
-    <h2>Your Properties</h2>
-    {% for property in properties %}
+<body>
+    <!-- User Info -->
+    <div id="user-info" class="form-card">
+        <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+        <p>Email: {{ user.email }}</p>
+        <p>Phone: {{ user.phone_1 }} {% if user.phone_2 %} / {{ user.phone_2 }} {% endif %}</p>
+        <p>Role: {{ user.role.title }}</p>
+        <p>Address: {{ user.address }}</p>
+        <p>Joined: {{ user.created_at|date:"M d, Y" }}</p>
+        <button type="button" onclick="showEditForm()">Edit Profile</button>
+    </div>
+
+    <!-- Edit Form -->
+    <div id="edit-form" class="form-card">
+        <h1>Edit Your Details</h1>
+        <form action="/update-user/" method="POST">
+            {% csrf_token %}
+            <p><label for="first_name">First Name:</label><br>
+                <input type="text" name="first_name" value="{{ user.first_name }}">
+            </p>
+            <p><label for="last_name">Last Name:</label><br>
+                <input type="text" name="last_name" value="{{ user.last_name }}">
+            </p>
+            <p><label for="email">Email:</label><br>
+                <input type="email" name="email" value="{{ user.email }}">
+            </p>
+            <p><label for="phone_1">Phone 1:</label><br>
+                <input type="text" name="phone_1" value="{{ user.phone_1 }}">
+            </p>
+            <p><label for="phone_2">Phone 2:</label><br>
+                <input type="text" name="phone_2" value="{{ user.phone_2 }}">
+            </p>
+            <p><label for="address">Address:</label><br>
+                <input type="text" name="address" value="{{ user.address }}">
+            </p>
+            <p><label for="password">Password:</label><br>
+                <input type="password" name="password" id="password">
+            </p>
+            <p>
+                <button type="submit">Save Changes</button>
+                <button type="reset" onclick="hideEditForm()">Cancel</button>
+            </p>
+        </form>
+    </div>
+
+    <!-- Properties -->
+    <div class="form-card">
+        <h2>Your Properties</h2>
+        {% for property in properties %}
         <div>
             <h2>{{ property.type.title }} - {{ property.city.title }}</h2>
             <p>Area: {{ property.area }} sq ft</p>
@@ -25,8 +71,11 @@
             <p>Active: {{ property.is_active }}</p>
             <p>Notes: {{ property.notes }}</p>
         </div>
-    {% empty %}
+        {% empty %}
         <p>No properties found.</p>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </body>
+<script src="{% static 'js/scripts.js' %}"></script>
+
 </html>

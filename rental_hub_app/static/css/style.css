@@ -28,7 +28,7 @@ body {
 header {
     background-color: #f0f2f5;
     color: #2c3e50;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
     border-bottom: 1px solid #e0e0e0;
 }
@@ -120,7 +120,7 @@ header {
     background: white;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.6s ease-out;
 }
 
@@ -129,6 +129,7 @@ header {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -171,6 +172,7 @@ header {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -323,7 +325,7 @@ header {
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
     animation: rotate 20s linear infinite;
 }
 
@@ -331,6 +333,7 @@ header {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -349,6 +352,7 @@ header {
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -361,9 +365,12 @@ header {
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-10px);
     }
@@ -395,15 +402,18 @@ header {
     position: relative;
     background: linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     border-radius: 3px 3px 0 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     z-index: 1;
     animation: buildingPulse 2s ease-in-out infinite;
 }
 
 @keyframes buildingPulse {
-    0%, 100% {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+
+    0%,
+    100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
+
     50% {
         box-shadow: 0 4px 15px rgba(173, 181, 189, 0.6);
     }
@@ -412,8 +422,8 @@ header {
 .brand-logo-animated .building-1 {
     width: 35px;
     height: 50px;
-    background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px),
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.1) 10px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     animation-delay: 0s;
 }
@@ -421,8 +431,8 @@ header {
 .brand-logo-animated .building-2 {
     width: 30px;
     height: 65px;
-    background-image: 
-        repeating-linear-gradient(90deg, transparent, transparent 6px, rgba(0,0,0,0.15) 6px, rgba(0,0,0,0.15) 8px),
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 6px, rgba(0, 0, 0, 0.15) 6px, rgba(0, 0, 0, 0.15) 8px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     animation-delay: 0.2s;
 }
@@ -430,8 +440,8 @@ header {
 .brand-logo-animated .building-3 {
     width: 40px;
     height: 80px;
-    background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 12px),
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 12px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     position: relative;
     animation-delay: 0.4s;
@@ -444,15 +454,15 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px);
+    background:
+        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.1) 10px);
 }
 
 .brand-title {
     font-size: 2.5rem;
     font-weight: bold;
     margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     animation: fadeIn 1s ease-out 0.6s both;
 }
 
@@ -474,7 +484,7 @@ header {
     background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
     padding: 2rem 3rem;
     border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     text-align: center;
 }
 
@@ -504,31 +514,31 @@ header {
     position: relative;
     background: linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     border-radius: 3px 3px 0 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
 
 .building-1 {
     width: 35px;
     height: 50px;
-    background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px),
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.1) 10px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
 }
 
 .building-2 {
     width: 30px;
     height: 65px;
-    background-image: 
-        repeating-linear-gradient(90deg, transparent, transparent 6px, rgba(0,0,0,0.15) 6px, rgba(0,0,0,0.15) 8px),
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 6px, rgba(0, 0, 0, 0.15) 6px, rgba(0, 0, 0, 0.15) 8px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
 }
 
 .building-3 {
     width: 40px;
     height: 80px;
-    background-image: 
-        repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 12px),
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 12px),
         linear-gradient(135deg, #adb5bd 0%, #dee2e6 50%, #adb5bd 100%);
     position: relative;
 }
@@ -540,8 +550,8 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px);
+    background:
+        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.1) 10px);
 }
 
 .logo-text {
@@ -549,7 +559,7 @@ header {
     font-weight: bold;
     color: white;
     letter-spacing: 3px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     margin-top: 0.5rem;
 }
 
@@ -602,7 +612,7 @@ header {
     background: white;
     border-radius: 15px;
     padding: 3rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     max-width: 1000px;
     margin: 0 auto;
 }
@@ -611,7 +621,7 @@ header {
     background: white;
     border-radius: 10px;
     padding: 2.5rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     margin: 0 auto;
 }
@@ -620,7 +630,7 @@ header {
     background: white;
     border-radius: 10px;
     padding: 2.5rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 700px;
     margin: 0 auto;
 }
@@ -668,7 +678,7 @@ header {
 
 .tech-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .tech-name {
@@ -914,157 +924,157 @@ footer.auth-footer {
         flex-direction: column;
         gap: 1.5rem;
     }
-    
+
     .nav-menu {
         flex-direction: row;
         gap: 0.5rem;
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .nav-menu a {
         padding: 0.6rem 1.2rem;
         font-size: 0.9rem;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .page-header h1 {
         font-size: 2.2rem;
     }
-    
+
     .form-card,
     .content-card,
     .profile-card {
         padding: 2rem 1.5rem;
     }
-    
+
     .content-card {
         padding: 2.5rem 1.5rem;
     }
-    
+
     .about-section {
         margin-bottom: 3rem;
         padding-bottom: 2.5rem;
     }
-    
+
     .about-section h2,
     .technologies-section h2 {
         font-size: 1.8rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .about-section p {
         font-size: 1rem;
         text-align: left;
     }
-    
+
     .technologies-section {
         margin-top: 2rem;
         padding-top: 2rem;
     }
-    
+
     .tech-list {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .tech-item {
         padding: 2rem 1.5rem;
     }
-    
+
     .tech-name {
         font-size: 1.2rem;
     }
-    
+
     .footer-content {
         grid-template-columns: 1fr;
         text-align: center;
     }
-    
+
     .profile-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-    
+
     .detail-item {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .detail-label {
         min-width: auto;
     }
-    
-    
+
+
     .auth-card {
         grid-template-columns: 1fr;
         max-width: 100%;
         border-radius: 0;
     }
-    
+
     .auth-form-section {
         padding: 2rem 1.5rem;
     }
-    
+
     .auth-branding-section {
         padding: 2rem 1.5rem;
         min-height: 300px;
     }
-    
+
     .auth-title {
         font-size: 1.25rem;
     }
-    
+
     .auth-form .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .brand-title {
         font-size: 2rem;
     }
-    
+
     .brand-tagline {
         font-size: 1rem;
     }
-    
+
     .brand-logo-animated .building-1 {
         width: 28px;
         height: 40px;
     }
-    
+
     .brand-logo-animated .building-2 {
         width: 24px;
         height: 52px;
     }
-    
+
     .brand-logo-animated .building-3 {
         width: 32px;
         height: 64px;
     }
-    
+
     .logo {
         padding: 1.5rem 2rem;
     }
-    
+
     .logo-text {
         font-size: 1.5rem;
         letter-spacing: 2px;
     }
-    
+
     .building-1 {
         width: 28px;
         height: 40px;
     }
-    
+
     .building-2 {
         width: 24px;
         height: 52px;
     }
-    
+
     .building-3 {
         width: 32px;
         height: 64px;
@@ -1075,123 +1085,131 @@ footer.auth-footer {
     .container {
         padding: 0 15px;
     }
-    
+
     .page-header h1 {
         font-size: 1.8rem;
     }
-    
+
     .form-card,
     .content-card,
     .profile-card {
         padding: 1.5rem 1rem;
     }
-    
+
     .content-card {
         padding: 2rem 1rem;
     }
-    
+
     .about-section {
         margin-bottom: 2.5rem;
         padding-bottom: 2rem;
     }
-    
+
     .about-section h2,
     .technologies-section h2 {
         font-size: 1.5rem;
         margin-bottom: 1.25rem;
     }
-    
+
     .about-section p {
         font-size: 0.95rem;
         line-height: 1.8;
     }
-    
+
     .technologies-section {
         margin-top: 1.5rem;
         padding-top: 1.5rem;
     }
-    
+
     .tech-item {
         padding: 1.5rem 1.25rem;
     }
-    
+
     .tech-name {
         font-size: 1.1rem;
         margin-bottom: 0.75rem;
     }
-    
+
     .tech-item p {
         font-size: 0.9rem;
     }
-    
+
     .logo {
         padding: 1rem 1.5rem;
     }
-    
+
     .logo-text {
         font-size: 1.2rem;
         letter-spacing: 1px;
     }
-    
+
     .building-1 {
         width: 22px;
         height: 32px;
     }
-    
+
     .building-2 {
         width: 20px;
         height: 42px;
     }
-    
+
     .building-3 {
         width: 26px;
         height: 52px;
     }
-    
+
     .logo-buildings::before {
         width: 110%;
         height: 6px;
     }
-    
-    
+
+
     .auth-form-section {
         padding: 1.5rem 1rem;
     }
-    
+
     .auth-branding-section {
         padding: 1.5rem 1rem;
         min-height: 250px;
     }
-    
+
     .auth-title {
         font-size: 1.25rem;
     }
-    
+
     .auth-subtitle {
         font-size: 0.9rem;
     }
-    
+
     .brand-title {
         font-size: 1.5rem;
     }
-    
+
     .brand-tagline {
         font-size: 0.9rem;
     }
-    
+
     .brand-logo-animated .building-1 {
         width: 22px;
         height: 32px;
     }
-    
+
     .brand-logo-animated .building-2 {
         width: 20px;
         height: 42px;
     }
-    
+
     .brand-logo-animated .building-3 {
         width: 26px;
         height: 52px;
     }
 }
 
+#edit-form {
+    display: none;
+    margin-bottom: 2rem;
+}
+
+#user-info {
+    margin-bottom: 2rem;
+}
