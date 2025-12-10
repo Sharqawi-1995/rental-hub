@@ -2,6 +2,9 @@ from django.db import models
 import bcrypt
 import re
 import datetime 
+from django.core.files.storage import default_storage
+import os
+
 class User_Manager(models.Manager):
     def create_new_user_validator(self,postData):
         errors={}
@@ -220,8 +223,8 @@ class Property(models.Model):
     objects=Property_Manager()
 
 # only for hosts
-def add_property(form):
-    Property.objects.create(
+def add_property(form,file):
+    property=Property.objects.create(
     owner=User.objects.get(id=form['owner']),
     type=Type.objects.get(id=form['type']),
     rent_type=Rent_type.objects.get(id=form['rent_type']),
@@ -243,15 +246,41 @@ def add_property(form):
     rent_start_date=form['rent_start_date'],
     rent_end_date=form['rent_end_date'],
     notes_host=form['notes_host'],
-    notes_host_private=form['notes_host_private']           
+    notes_host_private=form['notes_host_private']
     )
+    if 'image_1' in file:
+        image_1= Image.objects.create(property=property,
+                                        image=file['image_1'],
+                                        title=form['image_1_title'])
+        property.images.add(image_1)
+        
+    if 'image_2' in file:  
+        image_2= Image.objects.create(property=property,
+                                        image=file['image_2'],
+                                        title=form['image_2_title'])
+        property.images.add(image_2)
+    if 'image_3' in file:    
+        image_3= Image.objects.create(property=property,
+                                        image=file['image_3'],
+                                        title=form['image_3_title'])
+        property.images.add(image_3)
+    if 'image_4' in file: 
+        image_4= Image.objects.create(property=property,
+                                        image=file['image_4'],
+                                        title=form['image_4_title'])
+        property.images.add(image_4)
+        
+    if 'image_5' in file:    
+        image_5= Image.objects.create(property=property,
+                                        image=file['image_5'],
+                                        title=form['image_5_title'])
+        property.images.add(image_5)
 
 # only for hosts
-def update_property(form,logged_in_user_id):
-    print(f"MMMMMMMMMMMMM")
+def update_property(form,file,logged_in_user_id):
     property=Property.objects.get(id=form['id'])
     property.type=Type.objects.get(id=form['type'])
-    rent_type=Rent_type.objects.get(id=form['rent_type'])
+    property.rent_type=Rent_type.objects.get(id=form['rent_type'])
     property.area=form['area']
     property.elevator=form['elevator']
     property.rent_allowance=form['rent_allowance']
@@ -263,7 +292,7 @@ def update_property(form,logged_in_user_id):
     property.num_air_conditions=form['num_air_conditions']
     property.num_parkings=form['num_parkings']
     property.internet_service=form['internet_service']
-    city=City.objects.get(id=form['city'])
+    property.city=City.objects.get(id=form['city'])
     property.address=form['address']
     property.is_vacant=form['is_vacant']
     if form['rent_start_date'] == '':
@@ -281,7 +310,61 @@ def update_property(form,logged_in_user_id):
         except ValueError:
             property.rent_end_date = '' 
     property.notes_host=form['notes_host']
-    property.notes_host_private=form['notes_host_private']       
+    property.notes_host_private=form['notes_host_private']   
+    images_list=Image.objects.filter(property=property)  
+    if len(file) != 0:
+        print("MMMMM inside edit images")
+        # if len(images_list[0].image) > 0:
+        #     os.remove(images_list[0].image.path) 
+        #     images_list[0].image=file['image_1'] 
+        #     images_list[0].image.save()
+            # print("MMMMM inside if len(images_list[0].image) > 0 ")
+            # print(file['image_1'].url)
+        if 'image_1' in file:
+            if len(images_list) > 0:
+                os.remove(images_list[0].image.path) 
+                images_list[0].delete()
+            image_1= Image.objects.create(property=property,
+                                    image=file['image_1'],
+                                    title=form['image_1_title'])
+            property.images.add(image_1)
+
+        if 'image_2' in file:
+            if len(images_list) > 1:
+                os.remove(images_list[1].image.path) 
+                images_list[1].delete()
+            image_2= Image.objects.create(property=property,
+                                    image=file['image_2'],
+                                    title=form['image_2_title'])
+            property.images.add(image_2)
+            
+        if 'image_3' in file:
+            if len(images_list) > 2:
+                os.remove(images_list[2].image.path) 
+                images_list[2].delete()
+            image_3= Image.objects.create(property=property,
+                                    image=file['image_3'],
+                                    title=form['image_3_title'])
+            property.images.add(image_3)
+
+        if 'image_4' in file:
+            if len(images_list) > 3:
+                os.remove(images_list[3].image.path) 
+                images_list[3].delete()
+            image_4= Image.objects.create(property=property,
+                                    image=file['image_4'],
+                                    title=form['image_4_title'])
+            property.images.add(image_4)
+            
+        if 'image_5' in file:
+            if len(images_list) > 4:
+                os.remove(images_list[4].image.path) 
+                images_list[4].delete()
+            image_5= Image.objects.create(property=property,
+                                    image=file['image_5'],
+                                    title=form['image_5_title'])
+            property.images.add(image_5)
+
     # this  condition is for admins only
     # only admins can change status of vehicles
     user_list=User.objects.filter(id=logged_in_user_id)
@@ -350,12 +433,10 @@ class Request(models.Model):
     objects=Request_Manager()
 
 class Image(models.Model):
-    uploader=models.ForeignKey(User,related_name='images',on_delete=models.CASCADE)
     property=models.ForeignKey(Property,related_name='images',on_delete=models.CASCADE)
-    path=models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/',default='uploads/default_image.jpg',null=True,blank=True)
     title = models.CharField(max_length=255)
     order=models.PositiveIntegerField(default=0)
-    description=models.TextField(blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     

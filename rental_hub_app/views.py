@@ -5,6 +5,8 @@ import datetime
 from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 
 # Create your views here.
 def login_meth(request):
@@ -110,7 +112,9 @@ def logout_meth(request):
     return redirect('/')
 
 def add_property_meth(request):
-    if request.method=="POST":
+    # if request.method=="POST":
+    if request.method == "POST":
+        image = request.FILES.get("image") 
         errors=Property.objects.create_new_property_validator(request.POST)
         if len(errors) > 0:
             for key,value in errors.items():
@@ -137,10 +141,14 @@ def add_property_meth(request):
             request.session['rent_end_date']=request.POST['rent_end_date']
             request.session['notes_host']=request.POST['notes_host']
             request.session['notes_host_private']=request.POST['notes_host_private']
-    
+            # request.session['image_1']=request.FILES["image_1"]
+            # request.session['image_2']=request.FILES["image_2"]
+            # request.session['image_1_title']=request.POST["image_1_title"]
+            # request.session['image_2_title']=request.POST["image_2_title"]
+            # request.session['image']=request.FILES["image"]
             return redirect('/add-property')
         else:
-            add_property(request.POST)
+            add_property(request.POST,request.FILES)
             # delete data from session
             if 'type' in request.session:
                 del request.session['type']
@@ -182,6 +190,16 @@ def add_property_meth(request):
                 del request.session['notes_host']
             if 'notes_host_private' in request.session:
                 del request.session['notes_host_private']
+            # if 'image' in request.session:
+            #     del request.session['image']
+            # if 'image_1' in request.session:
+            #     del request.session['image_1']
+            # if 'image_2' in request.session:
+            #     del request.session['image_2']
+            # if 'image_1_title' in request.session:
+            #     del request.session['image_1_title']
+            # if 'image_2_title' in request.session:
+            #     del request.session['image_2_title']
             request.session.modified = True
             return redirect('/my_properties')
     else:
@@ -224,7 +242,7 @@ def edit_property_meth(request,id):
     
             return redirect(f'/edit-property/{request.POST['id']}')
         else:
-            update_property(request.POST,request.session['logged_in_user_id'])
+            update_property(request.POST,request.FILES,request.session['logged_in_user_id'])
             # delete data from session
             if 'type' in request.session:
                 del request.session['type']
@@ -276,22 +294,26 @@ def edit_property_meth(request,id):
         property_list=Property.objects.filter(id=id)
         if property_list[0]:
             property=property_list[0]
+            images_list=Image.objects.filter(property=property)
         else:
             property="Record does not exists"
         context = {
                     'property_types': property_types,
                     'rent_types':rent_types,
                     'cities':cities,
-                    'property':property }
+                    'property':property,
+                    'images_list':images_list}
         return render(request,'property_edit.html',context)
     
 def view_property_meth(request,id):
     property_list=Property.objects.filter(id=id)
     if property_list[0]:
         property=property_list[0]
+        images_list=Image.objects.filter(property=property)
     else:
         property="Record does not exists"
-    context = {'property':property }
+    context = {'property':property,
+                'images_list':images_list}
     
     return render(request,'property_view.html',context)
 
@@ -300,7 +322,6 @@ def delete_property_meth(request,id):
         # only creator can delete this object
         property_list=Property.objects.filter(id=id)
         property_db=property_list[0]
-        
         if request.session.get('logged_in_user_id') == property_db.owner.id:
             delete_property(id)
             return redirect('/my_properties')

@@ -95,7 +95,13 @@
             <div>
                 <label class="col-sm-2 col-form-label">Date of announcement: {{property.created_at|date:"d b Y"}}</label>
             </div>
+            <di>
+            {% for image in images_list %}
+            <p>{{ image.title }}</p>
+            <img src="{{ image.image.url }}" width="200px">
+            {% endfor %}</di>
             
+
 
 
 
