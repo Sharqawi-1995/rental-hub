@@ -1,4 +1,4 @@
-Prental-hub
+Rental-hub
 - A Django platform connecting landlords and tenants with trust and simplicity.
 
 Tech Stack:-
@@ -28,13 +28,13 @@ Usage:-
 .Tenant Workflow:
   - Register/Login as tenant
   - Browse listings with filters
-  - Add properties to wishlist
+  - Add properties to Wishlist
   - Apply for booking → landlord receives request
 
 Future Improvements
 - Payment integration
 - Map-based property search
-- Notifications syste
+- Notifications system
 
 🎯 Purpose
 
